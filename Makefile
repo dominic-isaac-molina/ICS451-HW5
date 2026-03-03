@@ -12,12 +12,9 @@
 #
 #  FILE:        Makefile
 #
-#  DESCRIPTION: This Makefile compiles server.c with the required
-#               options and produces an executable named "server".
-#               Use "make" to build and "make clean" to remove
-#               the compiled output.
+#  DESCRIPTION: Compiles to create the executable
 #
-#  REFERENCES:
+#
 #
 #################################################################
 server: server.o

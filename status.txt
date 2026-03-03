@@ -1,0 +1,4 @@
+The server is running fine with no known bugs. I added error handling 
+statements to see which part of the code would fail but after testing
+it I did not run to any errors unless I purposely try to put invalid 
+inputs. I ran two different devices and it the server worked

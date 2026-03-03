@@ -12,11 +12,13 @@
 //
 //  FILE:        server.c
 //
-//  DESCRIPTION: 
+//  DESCRIPTION: Networking using sockets, posix, and C programming
 //
 //  REFERENCES:  https://www.youtube.com/watch?v=LtXEMwSG5-8
 //               https://en.wikipedia.org/wiki/C_POSIX_library
 //               https://www.geeksforgeeks.org/c/socket-programming-cc/
+//               https://medium.com/@coderx_15963/basic-tcp-ip-networking-in-c-using-posix-9a074d65bb35
+//               https://www.cs.dartmouth.edu/~campbell/cs50/socketprogramming.html
 //
 ****************************************************************/
 
@@ -35,11 +37,13 @@ void handleClient(int serverfd);
 //
 //  Function name: main
 //
-//  DESCRIPTION:   
+//  DESCRIPTION:   Sets up and runs the the program, keeps the 
+//                 loop running using handleClient func.
+//                 
 //
 //  Parameters:    argc : number of command line arguments
 //                 argv : array of command line argument strings
-//                        argv[1] is expected to be the port number
+//                        
 //
 //  Return values:  0 : program ran without errors
 //
@@ -65,7 +69,6 @@ int main(int argc, char *argv[])
     {
         handleClient(serverfd);
     }
-
     close(serverfd);
     return 0;
 }
@@ -74,7 +77,9 @@ int main(int argc, char *argv[])
 //
 //  Function name: createSocket
 //
-//  DESCRIPTION:   
+//  DESCRIPTION:   Creates a TCP socket for communication with
+//                 clients. Uses SO_REUSEADDR so that the port
+//                 can be used by another client rightaway.
 //
 //  Parameters:    void
 //
@@ -93,7 +98,7 @@ int createSocket(void)
         perror("socket function failed");
         exit(1);
     }
-    printf("Socket created.\n");
+    printf("Socket created\n");
 
     setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -104,10 +109,12 @@ int createSocket(void)
 //
 //  Function name: bindSocket
 //
-//  DESCRIPTION:   
+//  DESCRIPTION:   assigns a socket to a specific IP address 
+//                 and port number so the server can receive incoming 
+//                  client connections
 //
 //  Parameters:    serverfd : the server socket file descriptor
-//                 port      : the port number to bind to
+//                 port : the port number to bind to
 //
 //  Return values:  none
 //
@@ -134,7 +141,7 @@ void bindSocket(int serverfd, int port)
 //
 //  Function name: startListening
 //
-//  DESCRIPTION:   
+//  DESCRIPTION:   Waits for clients to connect to the network
 //
 //  Parameters:    serverfd : the server socket file descriptor
 //
@@ -146,17 +153,18 @@ void startListening(int serverfd)
 {
     if (listen(serverfd, 5) < 0)
     {
-        perror("listen() failed");
+        perror("listen failed");
         exit(1);
     }
-    printf("Listening for connections...\n");
+    printf("waiting for connections\n");
 }
 
 /****************************************************************
 //
 //  Function name: handleClient
 //
-//  DESCRIPTION:   This handles the connection with client.
+//  DESCRIPTION:   This handles the connection with client. It sends 
+//                 messages to the client.
 //
 //  Parameters:    serverfd : the server socket file descriptor
 //
@@ -172,11 +180,13 @@ void handleClient(int serverfd)
     socklen_t client_len = sizeof(client_port);
 
 
-    char *message = "Connection established. If you see this the server is working correctly\n";
+    char *message = "Connection established.\n";
+    char *message1 = "If you see this the server is working correctly\n";
+    char *message2 = "completed\n";
     printf("Waiting for a client to connect to the server\n");
-    client_fd = accept(serverfd, (struct sockaddr *) &client_port, &client_len);
+    clientfd = accept(serverfd, (struct sockaddr *) &client_port, &client_len);
 
-    if (client_fd < 0)
+    if (clientfd < 0)
     {
         perror("error connecting to the client");
         return;
@@ -184,9 +194,11 @@ void handleClient(int serverfd)
     printf("Client connected from %s.\n", inet_ntoa(client_port.sin_addr));
 
     printf("Sending message\n");
-    send(client_fd, message, strlen(message), 0);
+    send(clientfd, message,  strlen(message),  0);
+    send(clientfd, message1, strlen(message1), 0);
+    send(clientfd, message2, strlen(message2), 0);
     printf("Message sent. \n");
     printf("Closing connection. \n");
 
-    close(client_fd);
+    close(clientfd);
 }
